@@ -1,0 +1,164 @@
+swagger: "2.0"
+
+info:
+  title: Helpdesk API
+  description: basic CRUD API
+  version: "1"
+
+basePath: /
+
+
+parameters:
+  Ticketid:
+    name: Ticketid
+    in: path
+    description: Id of the Ticket
+    required: true
+    type: string
+  RequestorName:
+    name: RequestorName
+    in: query
+    description: Name of the Requestor
+    type: string
+    required: false
+  Priority:
+    name: Priority
+    in: query
+    description:  Priority
+    type: number
+    required: false
+
+responses:
+  BadRequest:
+    description: Bad Request
+    schema:
+      $ref: "#/definitions/Problem"
+  Created:
+    description: Created
+  NoContent:
+    description: No Content
+  NotFound:
+    description: Not Found
+    schema:
+      $ref: "#/definitions/Problem"
+
+paths:
+
+  /Tickets:
+    get:
+      summary: Get all Tickets
+      operationId: list_Tickets
+      parameters:
+        - $ref: "#/parameters/RequestorName"
+        - $ref: "#/parameters/Priority"
+      responses:
+        200:
+          description: List of Tickets
+        500:
+          description: Unexpected error
+    post:
+      summary: Create a ticket
+      operationId: post_ticket
+      parameters:
+        - name: ticketRequest
+          in: body
+          description: event payload
+          required: true
+          schema:
+            $ref: "#/definitions/postTicketRequest"
+      responses:
+        200:
+          description: response data
+        400:
+          $ref: "#/responses/BadRequest"
+        500:
+          description: Unexpected error
+      
+  /Tickets/{Ticketid}:
+    get:
+      summary: Get all Tickets
+      operationId: Ticket_Create
+      parameters:
+        - $ref: "#/parameters/Ticketid"
+      responses:
+        200:
+          description: Ticket
+        404:
+          $ref: "#/responses/NotFound"
+        500:
+          description: Unexpected error
+    put:
+      summary: Update a Ticket
+      operationId: Update_Ticket
+      parameters:
+        - $ref: "#/parameters/Ticketid"
+        - name: TicketRequest
+          in: body
+          description: event payload
+          required: true
+          schema:
+            $ref: "#/definitions/putTicketRequest"
+      responses:
+        200:
+          description: response data
+        404:
+          $ref: "#/responses/NotFound"
+        500:
+          description: Unexpected error
+    delete:
+      summary: Update a Ticket
+      operationId: delete_Ticket
+      parameters:
+        - $ref: "#/parameters/Ticketid
+      responses:
+        204:
+          description: deleted
+        404:
+          $ref: "#/responses/NotFound"
+        500:
+          description: Unexpected error
+
+definitions:
+
+  Problem:
+    type: object
+    properties:
+      error:
+        type: string
+      status:
+        type: number
+    required: ["error", "status"]
+  postTicketRequest:
+    additionalProperties: False
+    type: object
+    properties:
+      Ticketid:
+        type: string
+      RequestorName:
+        type: string
+      Ticketstatus:
+        type: string
+      Priority:
+        type: number
+        minimum: 1
+        maximum: 5
+        enum: [1, 2, 3, 4, 5]
+    required:
+    - Ticketid
+    - RequestorName
+    - Ticketstatus
+    - Priority
+  putTicketRequest:
+    additionalProperties: False
+    type: object
+    properties:
+      Ticketid:
+        type: string
+      RequestorName:
+        type: string
+      Ticketstatus:
+        type: string
+      Priority:
+        type: number
+        minimum: 1
+        maximum: 5
